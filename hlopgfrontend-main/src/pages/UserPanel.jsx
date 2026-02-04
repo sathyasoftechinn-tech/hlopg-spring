@@ -270,9 +270,9 @@ useEffect(() => {
 //           // Fix image URL if needed
 //           if (displayImage && !displayImage.startsWith('http')) {
 //             if (displayImage.startsWith('/uploads')) {
-//               displayImage = `http://localhost:8080${displayImage}`;
+//               displayImage = `http://72.61.241.195:8080${displayImage}`;
 //             } else {
-//               displayImage = `http://localhost:8080/uploads/${displayImage}`;
+//               displayImage = `http://72.61.241.195:8080/uploads/${displayImage}`;
 //             }
 //           }
           
@@ -414,11 +414,11 @@ const getFullImageUrl = (imagePath) => {
   }
   
   if (imagePath.startsWith('/uploads')) {
-    return `http://localhost:8080${imagePath}`;
+    return `http://72.61.241.195:8080${imagePath}`;
   }
   
   if (imagePath) {
-    return `http://localhost:8080/uploads/${imagePath}`;
+    return `http://72.61.241.195:8080/uploads/${imagePath}`;
   }
   
   return defaultPGImg; // This will now work
