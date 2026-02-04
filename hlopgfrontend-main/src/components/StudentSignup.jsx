@@ -14,7 +14,7 @@ const StudentSignup = () => {
     phone: "",
     password: "",
     confirmPassword: "",
-    gender: "MALE",
+    gender: "",
   });
 
   const [errors, setErrors] = useState({});
