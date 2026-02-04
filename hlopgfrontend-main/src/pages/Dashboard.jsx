@@ -704,15 +704,15 @@
 // //               if (img.startsWith('http')) {
 // //                 displayImage = img;
 // //               } else if (img.startsWith('/')) {
-// //                 displayImage = `http://72.61.241.195:8080${img}`;
+// //                 displayImage = `http://18.61.100.62:8080${img}`;
 // //               } else {
-// //                 displayImage = `http://72.61.241.195:8080/uploads/${img}`;
+// //                 displayImage = `http://18.61.100.62:8080/uploads/${img}`;
 // //               }
 // //             } else if (pg.img) {
 // //               if (pg.img.startsWith('http')) {
 // //                 displayImage = pg.img;
 // //               } else {
-// //                 displayImage = `http://72.61.241.195:8080${pg.img}`;
+// //                 displayImage = `http://18.61.100.62:8080${pg.img}`;
 // //               }
 // //             }
             
@@ -1026,15 +1026,15 @@
 //               if (img.startsWith('http')) {
 //                 displayImage = img;
 //               } else if (img.startsWith('/')) {
-//                 displayImage = `http://72.61.241.195:8080${img}`;
+//                 displayImage = `http://18.61.100.62:8080${img}`;
 //               } else {
-//                 displayImage = `http://72.61.241.195:8080/uploads/${img}`;
+//                 displayImage = `http://18.61.100.62:8080/uploads/${img}`;
 //               }
 //             } else if (pg.img) {
 //               if (pg.img.startsWith('http')) {
 //                 displayImage = pg.img;
 //               } else {
-//                 displayImage = `http://72.61.241.195:8080${pg.img}`;
+//                 displayImage = `http://18.61.100.62:8080${pg.img}`;
 //               }
 //             }
             
@@ -1374,15 +1374,15 @@ const Dashboard = ({ user }) => {
               if (img.startsWith('http')) {
                 displayImage = img;
               } else if (img.startsWith('/')) {
-                displayImage = `http://72.61.241.195:8080${img}`;
+                displayImage = `http://18.61.100.62:8080${img}`;
               } else {
-                displayImage = `http://72.61.241.195:8080/uploads/${img}`;
+                displayImage = `http://18.61.100.62:8080/uploads/${img}`;
               }
             } else if (pg.img) {
               if (pg.img.startsWith('http')) {
                 displayImage = pg.img;
               } else {
-                displayImage = `http://72.61.241.195:8080${pg.img}`;
+                displayImage = `http://18.61.100.62:8080${pg.img}`;
               }
             }
             

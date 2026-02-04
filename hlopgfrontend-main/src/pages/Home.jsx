@@ -58,11 +58,11 @@ const forceUpdate = () => setForceUpdateFlag(!forceUpdateFlag);
     }
     
     if (imagePath.startsWith('/uploads')) {
-      return `http://72.61.241.195:8080${imagePath}`;
+      return `http://18.61.100.62:8080${imagePath}`;
     }
     
     if (imagePath) {
-      return `http://72.61.241.195:8080/uploads/${imagePath}`;
+      return `http://18.61.100.62:8080/uploads/${imagePath}`;
     }
     
     return defaultPGImg;
