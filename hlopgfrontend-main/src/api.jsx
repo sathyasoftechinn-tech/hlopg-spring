@@ -2,7 +2,7 @@
 // // import axios from "axios";
 
 // // const api = axios.create({
-// //   baseURL: "http://18.61.100.62:8080/api", // ✅ Backend on port 8080
+// //   baseURL: "http://hlopg.com:8080/api", // ✅ Backend on port 8080
 // //   timeout: 20000,
 // //   headers: {
 // //     'Content-Type': 'application/json',
@@ -69,7 +69,7 @@
 // import axios from "axios";
 
 // const api = axios.create({
-//   baseURL: "http://18.61.100.62:8080/api", // Your backend URL
+//   baseURL: "http://hlopg.com:8080/api", // Your backend URL
 //   timeout: 10000,
 //   headers: {
 //     'Content-Type': 'application/json',
@@ -105,7 +105,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://18.61.100.62:8080/api",
+  baseURL: "http://hlopg.com:8080/api",
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',

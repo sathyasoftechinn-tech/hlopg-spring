@@ -54,12 +54,12 @@
 // //             if (pg.images && Array.isArray(pg.images)) {
 // //               images = pg.images.map(img => {
 // //                 if (img.startsWith('http')) return img;
-// //                 if (img.startsWith('/uploads')) return `http://18.61.100.62:8080${img}`;
-// //                 if (img) return `http://18.61.100.62:8080/uploads/${img}`;
+// //                 if (img.startsWith('/uploads')) return `http://hlopg.com:8080${img}`;
+// //                 if (img) return `http://hlopg.com:8080/uploads/${img}`;
 // //                 return pgDefaultImg;
 // //               });
 // //             } else if (pg.img) {
-// //               images = [pg.img.startsWith('http') ? pg.img : `http://18.61.100.62:8080${pg.img}`];
+// //               images = [pg.img.startsWith('http') ? pg.img : `http://hlopg.com:8080${pg.img}`];
 // //             } else {
 // //               images = [pgDefaultImg];
 // //             }
@@ -547,12 +547,12 @@
 //             if (pg.images && Array.isArray(pg.images)) {
 //               images = pg.images.map(img => {
 //                 if (img.startsWith('http')) return img;
-//                 if (img.startsWith('/uploads')) return `http://18.61.100.62:8080${img}`;
-//                 if (img) return `http://18.61.100.62:8080/uploads/${img}`;
+//                 if (img.startsWith('/uploads')) return `http://hlopg.com:8080${img}`;
+//                 if (img) return `http://hlopg.com:8080/uploads/${img}`;
 //                 return pgDefaultImg;
 //               });
 //             } else if (pg.img) {
-//               images = [pg.img.startsWith('http') ? pg.img : `http://18.61.100.62:8080${pg.img}`];
+//               images = [pg.img.startsWith('http') ? pg.img : `http://hlopg.com:8080${pg.img}`];
 //             } else {
 //               images = [pgDefaultImg];
 //             }
@@ -1275,12 +1275,12 @@ const MyPGs = ({ user }) => {
             if (pg.images && Array.isArray(pg.images)) {
               images = pg.images.map(img => {
                 if (img.startsWith('http')) return img;
-                if (img.startsWith('/uploads')) return `http://18.61.100.62:8080${img}`;
-                if (img) return `http://18.61.100.62:8080/uploads/${img}`;
+                if (img.startsWith('/uploads')) return `http://hlopg.com:8080${img}`;
+                if (img) return `http://hlopg.com:8080/uploads/${img}`;
                 return pgDefaultImg;
               });
             } else if (pg.img) {
-              images = [pg.img.startsWith('http') ? pg.img : `http://18.61.100.62:8080${pg.img}`];
+              images = [pg.img.startsWith('http') ? pg.img : `http://hlopg.com:8080${pg.img}`];
             } else {
               images = [pgDefaultImg];
             }
