@@ -890,36 +890,93 @@ public ResponseEntity<?> loginOwner(@RequestBody Map<String, String> request) {
 }
     
 // ========== GET USER BY TOKEN ==========
-@GetMapping("/userid")
-public ResponseEntity<?> getUserById(@RequestHeader("Authorization") String authHeader) {
-    System.out.println("👤 GET /auth/userid - Fetch user data");
+// @GetMapping("/userid")
+// public ResponseEntity<?> getUserById(@RequestHeader("Authorization") String authHeader) {
+//     System.out.println("👤 GET /auth/userid - Fetch user data");
     
+//     try {
+//         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//             return ResponseEntity.status(401).body("Invalid token");
+//         }
+        
+//         String token = authHeader.substring(7);
+//         System.out.println("🔑 Token received: " + token);
+        
+//         // Extract user ID from token (format: hlopg_123_timestamp)
+//         // String[] parts = token.split("_");
+//         // if (parts.length < 2) {
+//         //     return ResponseEntity.status(401).body("Invalid token format");
+//         // }
+        
+//         if (!jwtUtil.validateToken(token)) {
+//              return ResponseEntity.status(401).body("Invalid token");
+//         }
+
+//         Long userId = jwtUtil.extractUserId(token);
+//         String role = jwtUtil.extractRole(token);
+        
+//         // Long userId;
+//         try {
+//             userId = Long.parseLong(part s[1]);
+//         } catch (NumberFormatException e) {
+//             return ResponseEntity.status(401).body("Invalid user ID in token");
+//         }
+        
+//         // Find user
+//         User user = userRepository.findById(userId)
+//             .orElseThrow(() -> new RuntimeException("User not found"));
+        
+//         // Create response
+//         Map<String, Object> userData = new HashMap<>();
+//         userData.put("id", user.getId());
+//         userData.put("name", user.getName());
+//         userData.put("email", user.getEmail());
+//         userData.put("phone", user.getPhone());
+//         userData.put("gender", user.getGender());
+//         userData.put("userType", user.getUserType());
+        
+//         return ResponseEntity.ok(userData);
+        
+//     } catch (Exception e) {
+//         System.err.println("❌ Error fetching user: " + e.getMessage());
+//         return ResponseEntity.status(500).body("Failed to fetch user data");
+//     }
+// }
+
+@GetMapping("/userid")
+public ResponseEntity<?> getUserById(
+        @RequestHeader("Authorization") String authHeader) {
+
+    System.out.println("👤 GET /auth/userid - Fetch user data");
+
     try {
+        // 1️⃣ Check header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("Invalid token");
         }
-        
+
+        // 2️⃣ Extract token
         String token = authHeader.substring(7);
-        System.out.println("🔑 Token received: " + token);
-        
-        // Extract user ID from token (format: hlopg_123_timestamp)
-        String[] parts = token.split("_");
-        if (parts.length < 2) {
-            return ResponseEntity.status(401).body("Invalid token format");
+
+        // 3️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("Invalid or expired token");
         }
-        
-        Long userId;
-        try {
-            userId = Long.parseLong(parts[1]);
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(401).body("Invalid user ID in token");
+
+        // 4️⃣ Extract claims
+        Long userId = jwtUtil.extractUserId(token);
+        String role = jwtUtil.extractRole(token);
+
+        // 5️⃣ Enforce role
+        if (!"USER".equals(role)) {
+            return ResponseEntity.status(403).body("Access denied");
         }
-        
-        // Find user
+
+        // 6️⃣ Fetch user
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        // Create response
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 7️⃣ Build response
         Map<String, Object> userData = new HashMap<>();
         userData.put("id", user.getId());
         userData.put("name", user.getName());
@@ -927,66 +984,119 @@ public ResponseEntity<?> getUserById(@RequestHeader("Authorization") String auth
         userData.put("phone", user.getPhone());
         userData.put("gender", user.getGender());
         userData.put("userType", user.getUserType());
-        
+
         return ResponseEntity.ok(userData);
-        
+
     } catch (Exception e) {
         System.err.println("❌ Error fetching user: " + e.getMessage());
         return ResponseEntity.status(500).body("Failed to fetch user data");
     }
 }
 
+
 // ========== GET OWNER BY TOKEN ==========
-@GetMapping("/ownerid")
-public ResponseEntity<?> getOwnerById(@RequestHeader("Authorization") String authHeader) {
-    System.out.println("👑 GET /auth/ownerid - Fetch owner data");
+// @GetMapping("/ownerid")
+// public ResponseEntity<?> getOwnerById(@RequestHeader("Authorization") String authHeader) {
+//     System.out.println("👑 GET /auth/ownerid - Fetch owner data");
     
+//     try {
+//         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//             return ResponseEntity.status(401).body("Invalid token");
+//         }
+        
+//         String token = authHeader.substring(7);
+//         System.out.println("🔑 Token received: " + token);
+        
+//         // Extract owner ID from token (format: hlopg_owner_123_timestamp)
+//         String[] parts = token.split("_");
+//         if (parts.length < 3) {
+//             return ResponseEntity.status(401).body("Invalid token format");
+//         }
+        
+//         Long ownerId;
+//         try {
+//             ownerId = Long.parseLong(parts[2]); // owner is at index 2
+//         } catch (NumberFormatException e) {
+//             return ResponseEntity.status(401).body("Invalid owner ID in token");
+//         }
+        
+//         // Find user
+//         User owner = userRepository.findById(ownerId)
+//             .orElseThrow(() -> new RuntimeException("Owner not found"));
+        
+//         // Verify it's an owner
+//         if (!"OWNER".equals(owner.getUserType())) {
+//             return ResponseEntity.status(403).body("User is not an owner");
+//         }
+        
+//         // Create response
+//         Map<String, Object> ownerData = new HashMap<>();
+//         ownerData.put("id", owner.getId());
+//         ownerData.put("name", owner.getName());
+//         ownerData.put("email", owner.getEmail());
+//         ownerData.put("phone", owner.getPhone());
+//         ownerData.put("userType", owner.getUserType());
+        
+//         return ResponseEntity.ok(ownerData);
+        
+//     } catch (Exception e) {
+//         System.err.println("❌ Error fetching owner: " + e.getMessage());
+//         return ResponseEntity.status(500).body("Failed to fetch owner data");
+//     }
+// }
+
+@GetMapping("/ownerid")
+public ResponseEntity<?> getOwnerById(
+        @RequestHeader("Authorization") String authHeader) {
+
+    System.out.println("👑 GET /auth/ownerid - Fetch owner data");
+
     try {
+        // 1️⃣ Check header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body("Invalid token");
         }
-        
+
+        // 2️⃣ Extract token
         String token = authHeader.substring(7);
-        System.out.println("🔑 Token received: " + token);
-        
-        // Extract owner ID from token (format: hlopg_owner_123_timestamp)
-        String[] parts = token.split("_");
-        if (parts.length < 3) {
-            return ResponseEntity.status(401).body("Invalid token format");
+
+        // 3️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("Invalid or expired token");
         }
-        
-        Long ownerId;
-        try {
-            ownerId = Long.parseLong(parts[2]); // owner is at index 2
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(401).body("Invalid owner ID in token");
+
+        // 4️⃣ Extract claims
+        Long ownerId = jwtUtil.extractUserId(token);
+        String role = jwtUtil.extractRole(token);
+
+        // 5️⃣ Enforce OWNER role
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(403).body("Access denied");
         }
-        
-        // Find user
+
+        // 6️⃣ Fetch owner
         User owner = userRepository.findById(ownerId)
-            .orElseThrow(() -> new RuntimeException("Owner not found"));
-        
-        // Verify it's an owner
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
+
+        // 7️⃣ Safety check (optional but good)
         if (!"OWNER".equals(owner.getUserType())) {
             return ResponseEntity.status(403).body("User is not an owner");
         }
-        
-        // Create response
+
+        // 8️⃣ Build response
         Map<String, Object> ownerData = new HashMap<>();
         ownerData.put("id", owner.getId());
         ownerData.put("name", owner.getName());
         ownerData.put("email", owner.getEmail());
         ownerData.put("phone", owner.getPhone());
         ownerData.put("userType", owner.getUserType());
-        
+
         return ResponseEntity.ok(ownerData);
-        
+
     } catch (Exception e) {
         System.err.println("❌ Error fetching owner: " + e.getMessage());
         return ResponseEntity.status(500).body("Failed to fetch owner data");
     }
 }
-
-
 
 }
