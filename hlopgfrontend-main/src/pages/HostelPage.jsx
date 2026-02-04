@@ -132,14 +132,14 @@ const HostelPage = () => {
             data.images = data.images.map(img => {
               if (!img) return pg1;
               if (img.startsWith('http')) return img;
-              if (img.startsWith('/uploads')) return `http://72.61.241.195:8080${img}`;
-              return `http://72.61.241.195:8080/uploads/${img}`;
+              if (img.startsWith('/uploads')) return `http://localhost:8080${img}`;
+              return `http://localhost:8080/uploads/${img}`;
             });
           } else if (data.img) {
             // Fallback to single image
             const mainImg = data.img.startsWith('http') ? data.img : 
-                           data.img.startsWith('/uploads') ? `http://72.61.241.195:8080${data.img}` :
-                           `http://72.61.241.195:8080/uploads/${data.img}`;
+                           data.img.startsWith('/uploads') ? `http://localhost:8080${data.img}` :
+                           `http://localhost:8080/uploads/${data.img}`;
             data.images = [mainImg];
           } else {
             data.images = [pg1, pg2, pg3, pg4, pg5];
@@ -1251,4 +1251,3 @@ const BookingPopup = ({ onClose, onSubmit }) => {
 };
 
 export default HostelPage;
-

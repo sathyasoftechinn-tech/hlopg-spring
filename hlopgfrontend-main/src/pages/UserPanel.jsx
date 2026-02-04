@@ -270,9 +270,9 @@ useEffect(() => {
 //           // Fix image URL if needed
 //           if (displayImage && !displayImage.startsWith('http')) {
 //             if (displayImage.startsWith('/uploads')) {
-//               displayImage = `http://72.61.241.195:8080${displayImage}`;
+//               displayImage = `http://localhost:8080${displayImage}`;
 //             } else {
-//               displayImage = `http://72.61.241.195:8080/uploads/${displayImage}`;
+//               displayImage = `http://localhost:8080/uploads/${displayImage}`;
 //             }
 //           }
           
@@ -414,11 +414,11 @@ const getFullImageUrl = (imagePath) => {
   }
   
   if (imagePath.startsWith('/uploads')) {
-    return `http://72.61.241.195:8080${imagePath}`;
+    return `http://localhost:8080${imagePath}`;
   }
   
   if (imagePath) {
-    return `http://72.61.241.195:8080/uploads/${imagePath}`;
+    return `http://localhost:8080/uploads/${imagePath}`;
   }
   
   return defaultPGImg; // This will now work
@@ -726,32 +726,6 @@ const getFullImageUrl = (imagePath) => {
   //     )}
   //   </>
   // );
-
-  case "booked-pgs":
-  return (
-    <>
-      <h3>BOOKED PGs</h3>
-
-      {loadingBookings ? (
-        <p>Loading your bookings...</p>
-      ) : bookedPGs.length > 0 ? (
-        <div className="pg-list">
-          {bookedPGs.map((pg, idx) => (
-            <div className="pg-card" key={idx}>
-              <h4>{pg.hostelName || "PG Name"}</h4>
-              <p>📍 {pg.area || pg.city}</p>
-              <p>💰 ₹{pg.price}</p>
-              <p>📅 Booking Date: {pg.bookingDate}</p>
-              <p>Status: {pg.status}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>You have not booked any PGs yet.</p>
-      )}
-    </>
-  );
-
 
   case "liked-pg":
   return (
@@ -1063,7 +1037,6 @@ const getFullImageUrl = (imagePath) => {
 
           {[
             { id: "basic-info", label: "Basic Information" },
-            { id: "booked-pgs", label: "Booked PGs" },
             { id: "liked-pg", label: "Liked PG’s List" },
             { id: "payment-history", label: "Payment History" },
             { id: "change-password", label: "Change Password" },
