@@ -35,7 +35,6 @@ import Logo from "../assets/logo.png";
 import "./AdminPanel.css";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
-import { LOCK } from "sequelize";
 
 const sidebarOptions = [
   { name: "Dashboard", icon: <FaHome /> },
