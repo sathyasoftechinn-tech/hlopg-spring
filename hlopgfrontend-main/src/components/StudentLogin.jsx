@@ -72,7 +72,7 @@ const StudentLogin = () => {
       console.log("📥 Login response:", res.data);
       
       if (res.data.success) {
-        const { token, ...user } = res.data.data;
+        const { token, user } = res.data.data;
 
        clearAuth();
         

@@ -42,7 +42,6 @@ const sidebarOptions = [
   { name: "My PG’s", icon: <FaList /> },
   { name: "My Rooms", icon: <FaUser /> },
   { name: "Reviews", icon: <FaHeart /> },
-  {name: "Logout",icon:<FaSignOutAlt/>}
 ];
 
 
@@ -213,11 +212,6 @@ const AdminPanel = () => {
     alert("Logged out successfully!");
     navigate("/");
   };
-   useEffect(() => {
-  if (selected === "Logout") {
-    handleLogout();
-  }
-}, [selected]);
 
   const handleMyRoomsClick = () => {
     // Fetch user's PGs and show selection modal
@@ -271,10 +265,6 @@ const AdminPanel = () => {
       
       case "Reviews":
         return <Reviews />;
-      
-      case "Logout":
-        return null;
-        
       default:
         return (
           <div className="placeholder">

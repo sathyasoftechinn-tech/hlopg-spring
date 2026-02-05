@@ -58,7 +58,7 @@ const OwnerLogin = () => {
     
     if (res.data.success) {
       // ✅ FIX: Use the correct variable name
-      const { token, ...owner } = res.data.data;
+      const { token, owner } = res.data.data;
       
       clearAuth();
 

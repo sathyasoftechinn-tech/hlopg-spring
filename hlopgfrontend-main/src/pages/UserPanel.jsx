@@ -727,32 +727,6 @@ const getFullImageUrl = (imagePath) => {
   //   </>
   // );
 
-  case "booked-pgs":
-  return (
-    <>
-      <h3>BOOKED PGs</h3>
-
-      {loadingBookings ? (
-        <p>Loading your bookings...</p>
-      ) : bookedPGs.length > 0 ? (
-        <div className="pg-list">
-          {bookedPGs.map((pg, idx) => (
-            <div className="pg-card" key={idx}>
-              <h4>{pg.hostelName || "PG Name"}</h4>
-              <p>📍 {pg.area || pg.city}</p>
-              <p>💰 ₹{pg.price}</p>
-              <p>📅 Booking Date: {pg.bookingDate}</p>
-              <p>Status: {pg.status}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>You have not booked any PGs yet.</p>
-      )}
-    </>
-  );
-
-
   case "liked-pg":
   return (
     <>
@@ -1063,7 +1037,6 @@ const getFullImageUrl = (imagePath) => {
 
           {[
             { id: "basic-info", label: "Basic Information" },
-            { id: "booked-pgs", label: "Booked PGs" },
             { id: "liked-pg", label: "Liked PG’s List" },
             { id: "payment-history", label: "Payment History" },
             { id: "change-password", label: "Change Password" },

@@ -1251,4 +1251,3 @@ const BookingPopup = ({ onClose, onSubmit }) => {
 };
 
 export default HostelPage;
-
