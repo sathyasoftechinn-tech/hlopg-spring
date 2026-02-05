@@ -17,12 +17,19 @@ import com.hlopg_backend.model.Hostel;
 import com.hlopg_backend.model.Like;
 import com.hlopg_backend.repository.HostelRepository;
 import com.hlopg_backend.repository.LikeRepository;
+import com.hlopg_backend.security.JwtUtil;
 
 @RestController
 @RequestMapping("/api/hostel")
 // @CrossOrigin(origins = "*")
 public class HostelController {
-    
+
+    private final JwtUtil jwtUtil;
+    // Constructor injection for JwtUtil
+    public HostelController(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
     @Autowired
     private HostelService hostelService;
 
@@ -68,7 +75,32 @@ public class HostelController {
     @GetMapping("/owner/pgs")
     public ResponseEntity<?> getOwnerPGs(@RequestHeader("Authorization") String authHeader) {
         try {
-            Long ownerId = extractOwnerIdFromToken(authHeader);
+            // Long ownerId = extractOwnerIdFromToken(authHeader);
+            // 1️⃣ Validate Authorization header
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid token"));
+        }
+
+        String token = authHeader.substring(7);
+
+        // 2️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid or expired token"));
+        }
+
+        // 3️⃣ Extract user info from token
+        // Long userId = jwtUtil.extractUserId(token);
+        
+        String role = jwtUtil.extractRole(token);
+        Long ownerId = jwtUtil.extractUserId(token);
+
+        // 4️⃣ Enforce OWNER role
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("success", false, "message", "Access denied: Only owners allowed"));
+        }
             List<Hostel> hostels = hostelService.getHostelsByOwnerId(ownerId);
             List<Map<String, Object>> responseList = new ArrayList<>();
             
