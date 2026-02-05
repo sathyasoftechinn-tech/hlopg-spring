@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,9 +26,11 @@ import com.hlopg_backend.repository.BookingRepository;
 import com.hlopg_backend.repository.HostelRepository;
 import com.hlopg_backend.repository.NotificationRepository;
 import com.hlopg_backend.repository.UserRepository;
+import com.hlopg_backend.security.JwtUtil;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+
+// import io.jsonwebtoken.Claims;
+// import io.jsonwebtoken.Jwts;
 
 @RestController
 @RequestMapping("/api/booking")
@@ -48,92 +49,182 @@ public class BookingController {
     @Autowired
     private NotificationRepository notificationRepository;
     
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+    // @Value("${jwt.secret}")
+    // private String jwtSecret;
+
+    private final JwtUtil jwtUtil;
+
+     public BookingController(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     // Create booking request
+    // @PostMapping("/request")
+    // public ResponseEntity<Map<String, Object>> createBookingRequest(
+    //         @RequestBody Map<String, Object> bookingRequest,
+    //         @RequestHeader("Authorization") String authHeader) {
+        
+    //     Map<String, Object> response = new HashMap<>();
+        
+    //     try {
+    //         System.out.println("📝 Received booking request: " + bookingRequest);
+            
+    //         // Extract token and validate
+    //         String token = authHeader.replace("Bearer ", "");
+            
+    //         Claims claims = Jwts.parserBuilder()
+    //             .setSigningKey(jwtSecret.getBytes())
+    //             .build()
+    //             .parseClaimsJws(token)
+    //             .getBody();
+            
+    //         // Get user ID from token (Long)
+    //         String userIdStr = claims.getSubject();
+    //         Long userId = Long.parseLong(userIdStr);
+            
+    //         // Verify user exists
+    //         Optional<User> userOptional = userRepository.findById(userId);
+    //         if (!userOptional.isPresent()) {
+    //             response.put("success", false);
+    //             response.put("message", "User not found");
+    //             return ResponseEntity.badRequest().body(response);
+    //         }
+            
+    //         User user = userOptional.get();
+            
+    //         // Extract booking data from request
+    //         Long hostelId = Long.valueOf(bookingRequest.get("hostel_id").toString());
+    //         String sharingType = bookingRequest.get("sharing_type").toString();
+            
+    //         // Verify hostel exists
+    //         Optional<Hostel> hostelOptional = hostelRepository.findById(hostelId);
+    //         if (!hostelOptional.isPresent()) {
+    //             response.put("success", false);
+    //             response.put("message", "Hostel not found");
+    //             return ResponseEntity.badRequest().body(response);
+    //         }
+            
+    //         Hostel hostel = hostelOptional.get();
+            
+    //         // Generate unique booking ID
+    //         String generatedBookingId = "BR" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+            
+    //         // Create booking record
+    //         Booking booking = new Booking();
+    //         booking.setBookingId(generatedBookingId);
+    //         booking.setHostelId(hostelId);
+    //         booking.setUserId(userId);
+    //         booking.setUserName(bookingRequest.get("user_name").toString());
+    //         booking.setUserEmail(bookingRequest.get("user_email").toString());
+    //         booking.setUserPhone(bookingRequest.get("user_phone").toString());
+    //         booking.setSharingType(sharingType);
+    //         booking.setBookingDate(new Date());
+    //         booking.setStatus("pending");
+    //         booking.setCreatedAt(new Date());
+            
+    //         bookingRepository.save(booking);
+    //         System.out.println("✅ Booking created: " + generatedBookingId);
+            
+    //         // Create notification for owner
+    //         createOwnerNotification(hostel, user, booking);
+            
+    //         response.put("success", true);
+    //         response.put("booking_id", generatedBookingId);
+    //         response.put("message", "Booking request created successfully");
+            
+    //         return ResponseEntity.ok(response);
+            
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         response.put("success", false);
+    //         response.put("message", "Failed to create booking request: " + e.getMessage());
+    //         return ResponseEntity.badRequest().body(response);
+    //     }
+    // }
+
     @PostMapping("/request")
-    public ResponseEntity<Map<String, Object>> createBookingRequest(
-            @RequestBody Map<String, Object> bookingRequest,
-            @RequestHeader("Authorization") String authHeader) {
-        
-        Map<String, Object> response = new HashMap<>();
-        
-        try {
-            System.out.println("📝 Received booking request: " + bookingRequest);
-            
-            // Extract token and validate
-            String token = authHeader.replace("Bearer ", "");
-            
-            Claims claims = Jwts.parserBuilder()
-                .setSigningKey(jwtSecret.getBytes())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-            
-            // Get user ID from token (Long)
-            String userIdStr = claims.getSubject();
-            Long userId = Long.parseLong(userIdStr);
-            
-            // Verify user exists
-            Optional<User> userOptional = userRepository.findById(userId);
-            if (!userOptional.isPresent()) {
-                response.put("success", false);
-                response.put("message", "User not found");
-                return ResponseEntity.badRequest().body(response);
-            }
-            
-            User user = userOptional.get();
-            
-            // Extract booking data from request
-            Long hostelId = Long.valueOf(bookingRequest.get("hostel_id").toString());
-            String sharingType = bookingRequest.get("sharing_type").toString();
-            
-            // Verify hostel exists
-            Optional<Hostel> hostelOptional = hostelRepository.findById(hostelId);
-            if (!hostelOptional.isPresent()) {
-                response.put("success", false);
-                response.put("message", "Hostel not found");
-                return ResponseEntity.badRequest().body(response);
-            }
-            
-            Hostel hostel = hostelOptional.get();
-            
-            // Generate unique booking ID
-            String generatedBookingId = "BR" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-            
-            // Create booking record
-            Booking booking = new Booking();
-            booking.setBookingId(generatedBookingId);
-            booking.setHostelId(hostelId);
-            booking.setUserId(userId);
-            booking.setUserName(bookingRequest.get("user_name").toString());
-            booking.setUserEmail(bookingRequest.get("user_email").toString());
-            booking.setUserPhone(bookingRequest.get("user_phone").toString());
-            booking.setSharingType(sharingType);
-            booking.setBookingDate(new Date());
-            booking.setStatus("pending");
-            booking.setCreatedAt(new Date());
-            
-            bookingRepository.save(booking);
-            System.out.println("✅ Booking created: " + generatedBookingId);
-            
-            // Create notification for owner
-            createOwnerNotification(hostel, user, booking);
-            
-            response.put("success", true);
-            response.put("booking_id", generatedBookingId);
-            response.put("message", "Booking request created successfully");
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
+public ResponseEntity<Map<String, Object>> createBookingRequest(
+        @RequestBody Map<String, Object> bookingRequest,
+        @RequestHeader("Authorization") String authHeader) {
+
+    Map<String, Object> response = new HashMap<>();
+
+    try {
+        // 1️⃣ Validate header
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.put("success", false);
-            response.put("message", "Failed to create booking request: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            response.put("message", "Invalid token");
+            return ResponseEntity.status(401).body(response);
         }
+
+        // 2️⃣ Extract token
+        String token = authHeader.substring(7);
+
+        // 3️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            response.put("success", false);
+            response.put("message", "Invalid or expired token");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        // 4️⃣ Extract claims
+        Long userId = jwtUtil.extractUserId(token);
+        String role = jwtUtil.extractRole(token);
+
+        // 5️⃣ Enforce USER role
+        if (!"USER".equals(role)) {
+            response.put("success", false);
+            response.put("message", "Only users can create bookings");
+            return ResponseEntity.status(403).body(response);
+        }
+
+        // 6️⃣ Verify user exists
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 7️⃣ Extract booking data
+        Long hostelId = Long.valueOf(bookingRequest.get("hostel_id").toString());
+        String sharingType = bookingRequest.get("sharing_type").toString();
+
+        Hostel hostel = hostelRepository.findById(hostelId)
+                .orElseThrow(() -> new RuntimeException("Hostel not found"));
+
+        // 8️⃣ Create booking
+        String bookingId = "BR" + UUID.randomUUID().toString()
+                .substring(0, 8)
+                .toUpperCase();
+
+        Booking booking = new Booking();
+        booking.setBookingId(bookingId);
+        booking.setHostelId(hostelId);
+        booking.setUserId(userId);
+        booking.setUserName(user.getName());
+        booking.setUserEmail(user.getEmail());
+        booking.setUserPhone(user.getPhone());
+        booking.setSharingType(sharingType);
+        booking.setBookingDate(new Date());
+        booking.setStatus("pending");
+        booking.setCreatedAt(new Date());
+
+        bookingRepository.save(booking);
+
+        // 9️⃣ Notify owner
+        createOwnerNotification(hostel, user, booking);
+
+        response.put("success", true);
+        response.put("booking_id", bookingId);
+        response.put("message", "Booking request created successfully");
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.put("success", false);
+        response.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
     }
+}
+
 
     // Helper method to create owner notification
     // In BookingController.java - createOwnerNotification method
@@ -182,147 +273,352 @@ private void createOwnerNotification(Hostel hostel, User user, Booking booking) 
     }
 }
     // Get user bookings
-    @GetMapping("/user-bookings")
-    public ResponseEntity<Map<String, Object>> getUserBookings(@RequestHeader("Authorization") String authHeader) {
-        Map<String, Object> response = new HashMap<>();
+    // @GetMapping("/user-bookings")
+    // public ResponseEntity<Map<String, Object>> getUserBookings(@RequestHeader("Authorization") String authHeader) {
+    //     Map<String, Object> response = new HashMap<>();
         
-        try {
-            // Extract token and get user ID
-            String token = authHeader.replace("Bearer ", "");
+    //     try {
+    //         // Extract token and get user ID
+    //         String token = authHeader.replace("Bearer ", "");
             
-            Claims claims = Jwts.parserBuilder()
-                .setSigningKey(jwtSecret.getBytes())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    //         Claims claims = Jwts.parserBuilder()
+    //             .setSigningKey(jwtSecret.getBytes())
+    //             .build()
+    //             .parseClaimsJws(token)
+    //             .getBody();
             
-            String userIdStr = claims.getSubject();
-            Long userId = Long.parseLong(userIdStr);
+    //         String userIdStr = claims.getSubject();
+    //         Long userId = Long.parseLong(userIdStr);
             
-            // Get bookings for this user
-            List<Booking> bookings = bookingRepository.findByUserId(userId);
+    //         // Get bookings for this user
+    //         List<Booking> bookings = bookingRepository.findByUserId(userId);
             
-            // Format response
-            List<Map<String, Object>> formattedBookings = new ArrayList<>();
-            for (Booking booking : bookings) {
-                Map<String, Object> bookingMap = new HashMap<>();
-                bookingMap.put("bookingId", booking.getBookingId());
-                bookingMap.put("hostelId", booking.getHostelId());
-                bookingMap.put("userId", booking.getUserId());
-                bookingMap.put("userName", booking.getUserName());
-                bookingMap.put("userEmail", booking.getUserEmail());
-                bookingMap.put("userPhone", booking.getUserPhone());
-                bookingMap.put("sharingType", booking.getSharingType());
-                bookingMap.put("bookingDate", booking.getBookingDate());
-                bookingMap.put("status", booking.getStatus());
-                bookingMap.put("createdAt", booking.getCreatedAt());
+    //         // Format response
+    //         List<Map<String, Object>> formattedBookings = new ArrayList<>();
+    //         for (Booking booking : bookings) {
+    //             Map<String, Object> bookingMap = new HashMap<>();
+    //             bookingMap.put("bookingId", booking.getBookingId());
+    //             bookingMap.put("hostelId", booking.getHostelId());
+    //             bookingMap.put("userId", booking.getUserId());
+    //             bookingMap.put("userName", booking.getUserName());
+    //             bookingMap.put("userEmail", booking.getUserEmail());
+    //             bookingMap.put("userPhone", booking.getUserPhone());
+    //             bookingMap.put("sharingType", booking.getSharingType());
+    //             bookingMap.put("bookingDate", booking.getBookingDate());
+    //             bookingMap.put("status", booking.getStatus());
+    //             bookingMap.put("createdAt", booking.getCreatedAt());
                 
-                // Get hostel details if needed
-                Optional<Hostel> hostelOpt = hostelRepository.findById(booking.getHostelId());
-                if (hostelOpt.isPresent()) {
-                    Hostel hostel = hostelOpt.get();
-                    bookingMap.put("hostelName", hostel.getHostelName());
-                    bookingMap.put("area", hostel.getArea());
-                    bookingMap.put("city", hostel.getCity());
-                    bookingMap.put("address", hostel.getAddress());
-                }
+    //             // Get hostel details if needed
+    //             Optional<Hostel> hostelOpt = hostelRepository.findById(booking.getHostelId());
+    //             if (hostelOpt.isPresent()) {
+    //                 Hostel hostel = hostelOpt.get();
+    //                 bookingMap.put("hostelName", hostel.getHostelName());
+    //                 bookingMap.put("area", hostel.getArea());
+    //                 bookingMap.put("city", hostel.getCity());
+    //                 bookingMap.put("address", hostel.getAddress());
+    //             }
                 
-                formattedBookings.add(bookingMap);
-            }
+    //             formattedBookings.add(bookingMap);
+    //         }
             
-            response.put("success", true);
-            response.put("bookings", formattedBookings);
+    //         response.put("success", true);
+    //         response.put("bookings", formattedBookings);
             
-            return ResponseEntity.ok(response);
+    //         return ResponseEntity.ok(response);
             
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.put("success", false);
-            response.put("message", "Failed to fetch bookings: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         response.put("success", false);
+    //         response.put("message", "Failed to fetch bookings: " + e.getMessage());
+    //         return ResponseEntity.badRequest().body(response);
+    //     }
+    // }
 
-    // Get booking details
-    @GetMapping("/{bookingId}")
-    public ResponseEntity<Map<String, Object>> getBookingDetails(
-            @PathVariable String bookingId,
-            @RequestHeader("Authorization") String authHeader) {
-        
-        Map<String, Object> response = new HashMap<>();
-        
-        try {
-            // Find booking by ID
-            Optional<Booking> bookingOptional = bookingRepository.findByBookingId(bookingId);
-            if (!bookingOptional.isPresent()) {
-                response.put("success", false);
-                response.put("message", "Booking not found");
-                return ResponseEntity.badRequest().body(response);
-            }
-            
-            Booking booking = bookingOptional.get();
-            
-            // Get hostel details
-            Optional<Hostel> hostelOptional = hostelRepository.findById(booking.getHostelId());
-            
-            // Format response
-            Map<String, Object> bookingDetails = new HashMap<>();
-            bookingDetails.put("bookingId", booking.getBookingId());
-            bookingDetails.put("status", booking.getStatus());
-            bookingDetails.put("sharingType", booking.getSharingType());
-            bookingDetails.put("bookingDate", booking.getBookingDate());
-            bookingDetails.put("userName", booking.getUserName());
-            bookingDetails.put("userEmail", booking.getUserEmail());
-            bookingDetails.put("userPhone", booking.getUserPhone());
-            
-            if (hostelOptional.isPresent()) {
-                Hostel hostel = hostelOptional.get();
-                bookingDetails.put("hostelName", hostel.getHostelName());
-                bookingDetails.put("hostelAddress", hostel.getAddress());
-                bookingDetails.put("hostelArea", hostel.getArea());
-                bookingDetails.put("hostelCity", hostel.getCity());
-                bookingDetails.put("hostelType", hostel.getPgType());
-            }
-            
-            response.put("success", true);
-            response.put("data", bookingDetails);
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
+    @GetMapping("/user-bookings")
+public ResponseEntity<Map<String, Object>> getUserBookings(@RequestHeader("Authorization") String authHeader) {
+    Map<String, Object> response = new HashMap<>();
+
+    try {
+        // 1️⃣ Validate token
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.put("success", false);
-            response.put("message", "Failed to get booking details");
-            return ResponseEntity.badRequest().body(response);
+            response.put("message", "Invalid token");
+            return ResponseEntity.status(401).body(response);
         }
+
+        String token = authHeader.substring(7);
+
+        if (!jwtUtil.validateToken(token)) {
+            response.put("success", false);
+            response.put("message", "Invalid or expired token");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        // 2️⃣ Extract user ID and role from token
+        Long userId = jwtUtil.extractUserId(token);
+        String role = jwtUtil.extractRole(token);
+
+        // 3️⃣ Optional: enforce USER role
+        if (!"USER".equals(role)) {
+            response.put("success", false);
+            response.put("message", "Only users can view their bookings");
+            return ResponseEntity.status(403).body(response);
+        }
+
+        // 4️⃣ Get bookings for this user
+        List<Booking> bookings = bookingRepository.findByUserId(userId);
+
+        // 5️⃣ Format response
+        List<Map<String, Object>> formattedBookings = new ArrayList<>();
+        for (Booking booking : bookings) {
+            Map<String, Object> bookingMap = new HashMap<>();
+            bookingMap.put("bookingId", booking.getBookingId());
+            bookingMap.put("hostelId", booking.getHostelId());
+            bookingMap.put("userId", booking.getUserId());
+            bookingMap.put("userName", booking.getUserName());
+            bookingMap.put("userEmail", booking.getUserEmail());
+            bookingMap.put("userPhone", booking.getUserPhone());
+            bookingMap.put("sharingType", booking.getSharingType());
+            bookingMap.put("bookingDate", booking.getBookingDate());
+            bookingMap.put("status", booking.getStatus());
+            bookingMap.put("createdAt", booking.getCreatedAt());
+
+            // Get hostel details if needed
+            Optional<Hostel> hostelOpt = hostelRepository.findById(booking.getHostelId());
+            if (hostelOpt.isPresent()) {
+                Hostel hostel = hostelOpt.get();
+                bookingMap.put("hostelName", hostel.getHostelName());
+                bookingMap.put("area", hostel.getArea());
+                bookingMap.put("city", hostel.getCity());
+                bookingMap.put("address", hostel.getAddress());
+            }
+
+            formattedBookings.add(bookingMap);
+        }
+
+        response.put("success", true);
+        response.put("bookings", formattedBookings);
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.put("success", false);
+        response.put("message", "Failed to fetch bookings: " + e.getMessage());
+        return ResponseEntity.badRequest().body(response);
     }
+}
+
+
+    // // Get booking details
+    // @GetMapping("/{bookingId}")
+    // public ResponseEntity<Map<String, Object>> getBookingDetails(
+    //         @PathVariable String bookingId,
+    //         @RequestHeader("Authorization") String authHeader) {
+        
+    //     Map<String, Object> response = new HashMap<>();
+        
+    //     try {
+    //         // Find booking by ID
+    //         Optional<Booking> bookingOptional = bookingRepository.findByBookingId(bookingId);
+    //         if (!bookingOptional.isPresent()) {
+    //             response.put("success", false);
+    //             response.put("message", "Booking not found");
+    //             return ResponseEntity.badRequest().body(response);
+    //         }
+            
+    //         Booking booking = bookingOptional.get();
+            
+    //         // Get hostel details
+    //         Optional<Hostel> hostelOptional = hostelRepository.findById(booking.getHostelId());
+            
+    //         // Format response
+    //         Map<String, Object> bookingDetails = new HashMap<>();
+    //         bookingDetails.put("bookingId", booking.getBookingId());
+    //         bookingDetails.put("status", booking.getStatus());
+    //         bookingDetails.put("sharingType", booking.getSharingType());
+    //         bookingDetails.put("bookingDate", booking.getBookingDate());
+    //         bookingDetails.put("userName", booking.getUserName());
+    //         bookingDetails.put("userEmail", booking.getUserEmail());
+    //         bookingDetails.put("userPhone", booking.getUserPhone());
+            
+    //         if (hostelOptional.isPresent()) {
+    //             Hostel hostel = hostelOptional.get();
+    //             bookingDetails.put("hostelName", hostel.getHostelName());
+    //             bookingDetails.put("hostelAddress", hostel.getAddress());
+    //             bookingDetails.put("hostelArea", hostel.getArea());
+    //             bookingDetails.put("hostelCity", hostel.getCity());
+    //             bookingDetails.put("hostelType", hostel.getPgType());
+    //         }
+            
+    //         response.put("success", true);
+    //         response.put("data", bookingDetails);
+            
+    //         return ResponseEntity.ok(response);
+            
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         response.put("success", false);
+    //         response.put("message", "Failed to get booking details");
+    //         return ResponseEntity.badRequest().body(response);
+    //     }
+    // }
+
+    @GetMapping("/{bookingId}")
+public ResponseEntity<Map<String, Object>> getBookingDetails(
+        @PathVariable String bookingId,
+        @RequestHeader("Authorization") String authHeader) {
+
+    Map<String, Object> response = new HashMap<>();
+
+    try {
+        // 1️⃣ Validate token
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            response.put("success", false);
+            response.put("message", "Invalid token");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        String token = authHeader.substring(7);
+
+        if (!jwtUtil.validateToken(token)) {
+            response.put("success", false);
+            response.put("message", "Invalid or expired token");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        // 2️⃣ Extract user ID and role from token (if needed for future role checks)
+        // Long userId = jwtUtil.extractUserId(token);
+        // String role = jwtUtil.extractRole(token);
+
+        // 3️⃣ Optional: enforce role if you want only USERS to view
+        // if (!"USER".equals(role)) {
+        //     response.put("success", false);
+        //     response.put("message", "Only users can view booking details");
+        //     return ResponseEntity.status(403).body(response);
+        // }
+
+        // 4️⃣ Find booking by ID
+        Booking booking = bookingRepository.findByBookingId(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        // 5️⃣ Get hostel details
+        Optional<Hostel> hostelOptional = hostelRepository.findById(booking.getHostelId());
+
+        // 6️⃣ Format response
+        Map<String, Object> bookingDetails = new HashMap<>();
+        bookingDetails.put("bookingId", booking.getBookingId());
+        bookingDetails.put("status", booking.getStatus());
+        bookingDetails.put("sharingType", booking.getSharingType());
+        bookingDetails.put("bookingDate", booking.getBookingDate());
+        bookingDetails.put("userName", booking.getUserName());
+        bookingDetails.put("userEmail", booking.getUserEmail());
+        bookingDetails.put("userPhone", booking.getUserPhone());
+
+        if (hostelOptional.isPresent()) {
+            Hostel hostel = hostelOptional.get();
+            bookingDetails.put("hostelName", hostel.getHostelName());
+            bookingDetails.put("hostelAddress", hostel.getAddress());
+            bookingDetails.put("hostelArea", hostel.getArea());
+            bookingDetails.put("hostelCity", hostel.getCity());
+            bookingDetails.put("hostelType", hostel.getPgType());
+        }
+
+        response.put("success", true);
+        response.put("data", bookingDetails);
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.put("success", false);
+        response.put("message", "Failed to get booking details: " + e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+}
+
 
     // Get booking status
-    @GetMapping("/status/{bookingId}")
-    public ResponseEntity<Map<String, Object>> getBookingStatus(@PathVariable String bookingId) {
-        Map<String, Object> response = new HashMap<>();
+//     @GetMapping("/status/{bookingId}")
+//     public ResponseEntity<Map<String, Object>> getBookingStatus(@PathVariable String bookingId) {
+//         Map<String, Object> response = new HashMap<>();
         
-        try {
-            Optional<Booking> bookingOptional = bookingRepository.findByBookingId(bookingId);
-            if (!bookingOptional.isPresent()) {
-                response.put("success", false);
-                response.put("message", "Booking not found");
-                return ResponseEntity.badRequest().body(response);
-            }
+//         try {
+//             Optional<Booking> bookingOptional = bookingRepository.findByBookingId(bookingId);
+//             if (!bookingOptional.isPresent()) {
+//                 response.put("success", false);
+//                 response.put("message", "Booking not found");
+//                 return ResponseEntity.badRequest().body(response);
+//             }
             
-            Booking booking = bookingOptional.get();
+//             Booking booking = bookingOptional.get();
             
-            response.put("success", true);
-            response.put("bookingId", booking.getBookingId());
-            response.put("status", booking.getStatus());
-            response.put("lastUpdated", booking.getCreatedAt());
+//             response.put("success", true);
+//             response.put("bookingId", booking.getBookingId());
+//             response.put("status", booking.getStatus());
+//             response.put("lastUpdated", booking.getCreatedAt());
             
-            return ResponseEntity.ok(response);
+//             return ResponseEntity.ok(response);
             
-        } catch (Exception e) {
+//         } catch (Exception e) {
+//             response.put("success", false);
+//             response.put("message", "Failed to get booking status");
+//             return ResponseEntity.badRequest().body(response);
+//         }
+//     }
+// }
+
+@GetMapping("/status/{bookingId}")
+public ResponseEntity<Map<String, Object>> getBookingStatus(
+        @PathVariable String bookingId,
+        @RequestHeader("Authorization") String authHeader) {
+
+    Map<String, Object> response = new HashMap<>();
+
+    try {
+        // 1️⃣ Validate token
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.put("success", false);
-            response.put("message", "Failed to get booking status");
-            return ResponseEntity.badRequest().body(response);
+            response.put("message", "Invalid token");
+            return ResponseEntity.status(401).body(response);
         }
+
+        String token = authHeader.substring(7);
+
+        if (!jwtUtil.validateToken(token)) {
+            response.put("success", false);
+            response.put("message", "Invalid or expired token");
+            return ResponseEntity.status(401).body(response);
+        }
+
+        // 2️⃣ Extract user ID and role (optional for role-based checks)
+        // Long userId = jwtUtil.extractUserId(token);
+        // String role = jwtUtil.extractRole(token);
+
+        // 3️⃣ Optional: enforce role if needed
+        // if (!"USER".equals(role)) {
+        //     response.put("success", false);
+        //     response.put("message", "Only users can check booking status");
+        //     return ResponseEntity.status(403).body(response);
+        // }
+
+        // 4️⃣ Find booking by ID
+        Booking booking = bookingRepository.findByBookingId(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        response.put("success", true);
+        response.put("bookingId", booking.getBookingId());
+        response.put("status", booking.getStatus());
+        response.put("lastUpdated", booking.getCreatedAt());
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.put("success", false);
+        response.put("message", "Failed to get booking status: " + e.getMessage());
+        return ResponseEntity.badRequest().body(response);
     }
+}
+
 }

@@ -17,12 +17,19 @@ import com.hlopg_backend.model.Hostel;
 import com.hlopg_backend.model.Like;
 import com.hlopg_backend.repository.HostelRepository;
 import com.hlopg_backend.repository.LikeRepository;
+import com.hlopg_backend.security.JwtUtil;
 
 @RestController
 @RequestMapping("/api/hostel")
 // @CrossOrigin(origins = "*")
 public class HostelController {
-    
+
+    private final JwtUtil jwtUtil;
+    // Constructor injection for JwtUtil
+    public HostelController(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
     @Autowired
     private HostelService hostelService;
 
@@ -68,7 +75,32 @@ public class HostelController {
     @GetMapping("/owner/pgs")
     public ResponseEntity<?> getOwnerPGs(@RequestHeader("Authorization") String authHeader) {
         try {
-            Long ownerId = extractOwnerIdFromToken(authHeader);
+            // Long ownerId = extractOwnerIdFromToken(authHeader);
+            // 1️⃣ Validate Authorization header
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid token"));
+        }
+
+        String token = authHeader.substring(7);
+
+        // 2️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid or expired token"));
+        }
+
+        // 3️⃣ Extract user info from token
+        // Long userId = jwtUtil.extractUserId(token);
+        
+        String role = jwtUtil.extractRole(token);
+        Long ownerId = jwtUtil.extractUserId(token);
+
+        // 4️⃣ Enforce OWNER role
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("success", false, "message", "Access denied: Only owners allowed"));
+        }
             List<Hostel> hostels = hostelService.getHostelsByOwnerId(ownerId);
             List<Map<String, Object>> responseList = new ArrayList<>();
             
@@ -129,8 +161,31 @@ public class HostelController {
         @RequestHeader("Authorization") String authHeader
     ) {
         try {
-            Long ownerId = extractOwnerIdFromToken(authHeader);
-            
+            // Long ownerId = extractOwnerIdFromToken(authHeader);
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid token"));
+        }
+
+        String token = authHeader.substring(7);
+
+        // 2️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid or expired token"));
+        }
+
+        // 3️⃣ Extract user info from token
+        // Long userId = jwtUtil.extractUserId(token);
+        
+        String role = jwtUtil.extractRole(token);
+        Long ownerId = jwtUtil.extractUserId(token);
+
+        // 4️⃣ Enforce OWNER role
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("success", false, "message", "Access denied: Only owners allowed"));
+        }
             // Extract minimum price from sharing
             Integer minPrice = 5000;
             try {
@@ -201,7 +256,31 @@ public ResponseEntity<?> updateHostel(
     @RequestHeader("Authorization") String authHeader
 ) {
     try {
-        Long ownerId = extractOwnerIdFromToken(authHeader);
+        // Long ownerId = extractOwnerIdFromToken(authHeader);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid token"));
+        }
+
+        String token = authHeader.substring(7);
+
+        // 2️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid or expired token"));
+        }
+
+        // 3️⃣ Extract user info from token
+        // Long userId = jwtUtil.extractUserId(token);
+        
+        String role = jwtUtil.extractRole(token);
+        Long ownerId = jwtUtil.extractUserId(token);
+
+        // 4️⃣ Enforce OWNER role
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("success", false, "message", "Access denied: Only owners allowed"));
+        }
         
         System.out.println("🔄 Updating hostel ID: " + hostelId);
         System.out.println("📋 Received " + (images != null ? images.length : 0) + " images");
@@ -265,7 +344,31 @@ public ResponseEntity<?> updateHostel(
         @RequestHeader("Authorization") String authHeader
     ) {
         try {
-            Long ownerId = extractOwnerIdFromToken(authHeader);
+            // Long ownerId = extractOwnerIdFromToken(authHeader);
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid token"));
+        }
+
+        String token = authHeader.substring(7);
+
+        // 2️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid or expired token"));
+        }
+
+        // 3️⃣ Extract user info from token
+        // Long userId = jwtUtil.extractUserId(token);
+        
+        String role = jwtUtil.extractRole(token);
+        // Long ownerId = jwtUtil.extractUserId(token);
+
+        // 4️⃣ Enforce OWNER role
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("success", false, "message", "Access denied: Only owners allowed"));
+        }
             boolean deleted = hostelService.deleteHostel(hostelId);
             
             if (deleted) {
@@ -286,7 +389,31 @@ public ResponseEntity<?> updateHostel(
     @GetMapping("/owner/count")
     public ResponseEntity<?> getOwnerPGsCount(@RequestHeader("Authorization") String authHeader) {
         try {
-            Long ownerId = extractOwnerIdFromToken(authHeader);
+            // Long ownerId = extractOwnerIdFromToken(authHeader);
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid token"));
+        }
+
+        String token = authHeader.substring(7);
+
+        // 2️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("success", false, "message", "Invalid or expired token"));
+        }
+
+        // 3️⃣ Extract user info from token
+        // Long userId = jwtUtil.extractUserId(token);
+        
+        String role = jwtUtil.extractRole(token);
+        Long ownerId = jwtUtil.extractUserId(token);
+
+        // 4️⃣ Enforce OWNER role
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(403)
+                    .body(Map.of("success", false, "message", "Access denied: Only owners allowed"));
+        }
             Long count = hostelService.getOwnerPGsCount(ownerId);
             
             Map<String, Object> response = new HashMap<>();
@@ -369,42 +496,77 @@ public ResponseEntity<?> updateHostel(
     }
     
     // Extract owner ID from token
-private Long extractOwnerIdFromToken(String authHeader) {
+// private Long extractOwnerIdFromToken(String authHeader) {
+//     try {
+//         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//             System.out.println("⚠️ No valid auth header");
+//             throw new RuntimeException("Authorization header is missing");
+//         }
+        
+//         String token = authHeader.substring(7);
+//         System.out.println("🔑 Token received: " + token);
+        
+//         // Your token format: hlopg_owner_123_timestamp
+//         String[] parts = token.split("_");
+        
+//         if (parts.length >= 3 && parts[0].equals("hlopg")) {
+//             if (parts[1].equals("owner")) {
+//                 // Owner token format: hlopg_owner_123_timestamp
+//                 Long ownerId = Long.parseLong(parts[2]);
+//                 System.out.println("✅ Extracted owner ID: " + ownerId);
+//                 return ownerId;
+//             } else {
+//                 // User token format: hlopg_123_timestamp
+//                 Long userId = Long.parseLong(parts[1]);
+//                 System.out.println("ℹ️ Using user ID as owner ID: " + userId);
+//                 return userId;
+//             }
+//         }
+        
+//         System.out.println("⚠️ Invalid token format, using default ID 1");
+//         return 1L; // Default owner ID
+        
+//     } catch (Exception e) {
+//         System.err.println("❌ Error extracting owner ID: " + e.getMessage());
+//         System.out.println("⚠️ Using default owner ID 1 due to error");
+//         return 1L; // Fallback to default
+//     }
+// }
+
+    private Long extractOwnerIdFromToken(String authHeader) {
     try {
+        // 1️⃣ Validate header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("⚠️ No valid auth header");
-            throw new RuntimeException("Authorization header is missing");
+            throw new RuntimeException("Authorization header is missing or invalid");
         }
-        
+
+        // 2️⃣ Extract token
         String token = authHeader.substring(7);
-        System.out.println("🔑 Token received: " + token);
-        
-        // Your token format: hlopg_owner_123_timestamp
-        String[] parts = token.split("_");
-        
-        if (parts.length >= 3 && parts[0].equals("hlopg")) {
-            if (parts[1].equals("owner")) {
-                // Owner token format: hlopg_owner_123_timestamp
-                Long ownerId = Long.parseLong(parts[2]);
-                System.out.println("✅ Extracted owner ID: " + ownerId);
-                return ownerId;
-            } else {
-                // User token format: hlopg_123_timestamp
-                Long userId = Long.parseLong(parts[1]);
-                System.out.println("ℹ️ Using user ID as owner ID: " + userId);
-                return userId;
-            }
+        System.out.println("🔑 JWT received");
+
+        // 3️⃣ Validate JWT
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Invalid or expired JWT");
         }
-        
-        System.out.println("⚠️ Invalid token format, using default ID 1");
-        return 1L; // Default owner ID
-        
+
+        // 4️⃣ Extract role
+        String role = jwtUtil.extractRole(token);
+        if (!"OWNER".equalsIgnoreCase(role)) {
+            throw new RuntimeException("Access denied: Not an OWNER");
+        }
+
+        // 5️⃣ Extract ownerId (userId)
+        Long ownerId = jwtUtil.extractUserId(token);
+        System.out.println("✅ Extracted owner ID from JWT: " + ownerId);
+
+        return ownerId;
+
     } catch (Exception e) {
-        System.err.println("❌ Error extracting owner ID: " + e.getMessage());
-        System.out.println("⚠️ Using default owner ID 1 due to error");
-        return 1L; // Fallback to default
+        System.err.println("❌ JWT extraction failed: " + e.getMessage());
+        throw new RuntimeException("Unauthorized"); // ❗ do NOT fallback
     }
 }
+
     
     // Error response helper
     private Map<String, Object> errorResponse(String message) {
@@ -417,31 +579,59 @@ private Long extractOwnerIdFromToken(String authHeader) {
   
 
 // Helper method to extract user ID from token (add this method)
-private Long extractUserIdFromToken(String authHeader) {
+// private Long extractUserIdFromToken(String authHeader) {
+//     try {
+//         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//             System.out.println("⚠️ No valid auth header in like-hostel");
+//             return 1L; // Default user ID for testing
+//         }
+        
+//         String token = authHeader.substring(7);
+//         System.out.println("🔑 Like token: " + token);
+        
+//         // Your token format: hlopg_123_timestamp
+//         String[] parts = token.split("_");
+        
+//         if (parts.length >= 2 && parts[0].equals("hlopg")) {
+//             Long userId = Long.parseLong(parts[1]);
+//             System.out.println("✅ Extracted user ID: " + userId);
+//             return userId;
+//         }
+        
+//         System.out.println("⚠️ Invalid token format, using default ID 1");
+//         return 1L;
+        
+//     } catch (Exception e) {
+//         System.err.println("❌ Error extracting user ID: " + e.getMessage());
+//         return 1L;
+//     }
+// }
+    
+    private Long extractUserIdFromToken(String authHeader) {
     try {
+        // 1️⃣ Validate header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("⚠️ No valid auth header in like-hostel");
-            return 1L; // Default user ID for testing
+            throw new RuntimeException("Authorization header missing or invalid");
         }
-        
+
+        // 2️⃣ Extract JWT
         String token = authHeader.substring(7);
-        System.out.println("🔑 Like token: " + token);
-        
-        // Your token format: hlopg_123_timestamp
-        String[] parts = token.split("_");
-        
-        if (parts.length >= 2 && parts[0].equals("hlopg")) {
-            Long userId = Long.parseLong(parts[1]);
-            System.out.println("✅ Extracted user ID: " + userId);
-            return userId;
+        System.out.println("🔑 JWT received");
+
+        // 3️⃣ Validate token
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Invalid or expired JWT");
         }
-        
-        System.out.println("⚠️ Invalid token format, using default ID 1");
-        return 1L;
-        
+
+        // 4️⃣ Extract userId
+        Long userId = jwtUtil.extractUserId(token);
+        System.out.println("✅ Extracted user ID from JWT: " + userId);
+
+        return userId;
+
     } catch (Exception e) {
-        System.err.println("❌ Error extracting user ID: " + e.getMessage());
-        return 1L;
+        System.err.println("❌ JWT extraction failed: " + e.getMessage());
+        throw new RuntimeException("Unauthorized"); // ❗ no default ID
     }
 }
 
